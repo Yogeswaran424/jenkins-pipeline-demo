@@ -1,48 +1,56 @@
 pipeline {
     agent any
 
-    // run weekly: H H * * 0  -> every Sunday once (approx every 7 days)
+    // Weekly schedule: Runs every Sunday at a random time
     triggers {
         cron('H H * * 0')
     }
 
     stages {
+
         stage('Checkout') {
             steps {
-                // if job uses Pipeline script from SCM, checkout scm will use the job's SCM
+                echo "===== Checking out the repository ====="
+                // Jenkins job should be configured with "Pipeline script from SCM"
+                // so 'checkout scm' will pull from your GitHub repo automatically.
                 checkout scm
             }
         }
 
         stage('Build') {
             steps {
-                echo "Building..."
-                sh 'echo build step: listing files; ls -la || dir'
+                echo "===== Building the project ====="
+                // Dummy build step - replace with actual build commands
+                sh 'echo "Build step complete"'
             }
         }
 
-        stage('SmokeTest') {
+        stage('Test') {
             steps {
-                echo "Running smoke test..."
-                // Simulate a simple test
+                echo "===== Running tests ====="
+                // Simulate test execution
                 sh 'test -f hello.txt && echo "hello.txt exists" || (echo "file missing" && exit 1)'
             }
         }
 
-        stage('Success') {
-            when { expression { currentBuild.resultIsBetterOrEqualTo(hudson.model.Result.SUCCESS) } }
+        stage('Deploy') {
             steps {
-                echo "Pipeline succeeded"
+                echo "===== Deploying application ====="
+                // Dummy deployment step
+                sh 'echo "Deploy step complete"'
             }
         }
     }
 
     post {
         success {
-            echo "Post: SUCCESS"
+            echo "🎉 Pipeline completed successfully!"
         }
         failure {
-            echo "Post: FAILURE — collect logs"
+            echo "❌ Pipeline failed — please check logs."
+        }
+        always {
+            echo "📦 Pipeline run finished at: ${new Date()}"
         }
     }
 }
